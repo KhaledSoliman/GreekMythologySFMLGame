@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.idea/FinalProject110.iml
+.idea/modules.xml
+.idea/workspace.xml
+SFML-2.4.2/
+cmake-build-debug/
