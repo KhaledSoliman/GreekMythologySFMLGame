@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/SFML-2.4.2/cmake/Modules/" ${CM
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DEBUG_LIBRARIES TRUE)
 set(SFML_ROOT "${CMAKE_CURRENT_LIST_DIR}/SFML-2.4.2/")
-set(SOURCE_FILES main.cpp lib/GUI.cpp lib/GUI.h lib/Game.cpp lib/Game.h lib/triggers.cpp lib/triggers.h lib/GL.cpp lib/GL.h)
+set(SOURCE_FILES main.cpp ini.h ini.c lib/INIReader.h lib/INIReader.cpp lib/GUI.cpp lib/GUI.h lib/Game.cpp lib/Game.h lib/triggers.cpp lib/triggers.h lib/GL.cpp lib/GL.h)
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 find_package(SFML 2.4.2 REQUIRED graphics window network audio system)
 include_directories(${SFML_INCLUDE_DIR})
