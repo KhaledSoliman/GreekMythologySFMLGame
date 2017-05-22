@@ -33,7 +33,7 @@ public:
     long GetInteger(const std::string& section, const std::string& name, long default_value) const;
 
 
-    unsigned __int32 GetUI(const std::string& section, const std::string& name,unsigned __int32 default_value) const;
+    unsigned __int32 GetUI(const std::string& section, const std::string& name,std::uint32_t  default_value) const;
 
     // Get a real (floating point double) value from INI file, returning
     // default_value if not found or not a valid floating point value

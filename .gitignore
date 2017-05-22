@@ -5,3 +5,5 @@
 .idea/workspace.xml
 SFML-2.4.2/
 cmake-build-debug/
+.idea/.name
+/CMakeLists.txt
