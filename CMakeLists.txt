@@ -3,7 +3,6 @@ project(FinalPorject110)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES main.cpp lib/GUI.cpp lib/GUI.h lib/triggers.cpp lib/triggers.h lib/Game.cpp lib/Game.h)
 set(EXECUTABLE_NAME "game")
 set(SOURCE_FILES main.cpp ini.h ini.c lib/INIReader.h lib/INIReader.cpp lib/GUI.cpp lib/GUI.h lib/Game.cpp lib/Game.h lib/triggers.cpp lib/triggers.h lib/GL.cpp lib/GL.h)
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
