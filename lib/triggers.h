@@ -6,11 +6,6 @@ namespace triggers {
 
     void quit();
     void startGame();
-    void back();
-    void backToMain();
-    void soloPlay();
-    void multiPlay();
-    void restartGame();
 
 };
 

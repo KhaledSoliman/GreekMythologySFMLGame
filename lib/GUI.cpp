@@ -1,8 +1,9 @@
 #include "GUI.h"
 #include "triggers.h"
 #include "Game.h"
+#include "INIReader.h"
 
-std::map<GUI::Menus, GUI::Menu*> GUI::menus;
+std::map<std::string, GUI::Menu*> GUI::menus;
 std::map<std::string, std::function<void()>> GUI::triggers;
 std::map<std::string, sf::Font*> GUI::fonts;
 std::vector<sf::Text*> GUI::texts;
@@ -16,18 +17,11 @@ void GUI::Init() {
     pFont->loadFromFile("../assets/fonts/sansation.ttf");
     fonts["sansation"] = pFont;
     sf::Texture *pTexture = new sf::Texture;
-    pTexture->loadFromFile("../assets/textures/menu_background.png");
+    pTexture->loadFromFile("../assets/textures/menu_texture.jpg");
     textures["menu_bg"] = pTexture;
-    triggers["Quit"] = triggers::quit;
     triggers["New Game"] = triggers::startGame;
-    triggers["Back"] = triggers::back;
-    triggers["1 Player"] = triggers::soloPlay;
-    triggers["2 Players"] = triggers::multiPlay;
-    triggers["Restart"] = triggers::restartGame;
-    triggers["Back to Main Menu"] = triggers::backToMain;
-    createMainMenu();
-    createModeMenu();
-    createEndGameMenu();
+    triggers["Quit"] = triggers::quit;
+    createMenu("main");
 }
 
 void GUI::Render(sf::RenderWindow &window) {
@@ -53,48 +47,36 @@ void GUI::removeTexts() {
     texts.clear();
 }
 
-void GUI::createMainMenu() {
+void GUI::createMenu(const std::string &menuName) {
+    INIReader reader("../config/menus.ini");
+    std::string section = "menu-" + menuName;
+    unsigned int numOfButtons = reader.GetUI(section, "buttons", 0);
+    float posx = reader.GetFloat(section, "posx", 0.f);
+    float posy = reader.GetFloat(section, "posy", 0.f);
+    float incx = reader.GetFloat(section, "incx", 0.f);
+    float incy = reader.GetFloat(section, "incy", 0.f);
+    std::string menuFont = reader.Get(section, "font", "F");
+    std::string hoverSound = reader.Get(section, "hover", "F");
+    std::string clickSound = reader.Get(section, "click", "F");
+    sf::Uint32 defaultColor = reader.GetUI(section, "defaultColor", 0xFFFFFFFF);
+    sf::Uint32 hoverColor = reader.GetUI(section, "hoverColor", 0xFFFFFFFF);
+    sf::Uint32 clickColor = reader.GetUI(section, "clickColor", 0xFFFFFFFF);
+    unsigned int charSize = reader.GetUI(section, "pixelSize", 16);
+    std::string buttonName;
     Menu* pMenu = new Menu;
+
     pMenu->setActive(true);
-    pMenu->setText("sansation.ttf", 50, 0x000000FF);
-    pMenu->setHover("Main_Menu_Hover_Effect.wav", 0xFF0000FF);
-    pMenu->setClick("Main_Menu_Click_Effect.wav", 0xFFFF00FF);
-    pMenu->setInc(sf::Vector2f(0.f, 100.f));
-    pMenu->setPosition(sf::Vector2f(200.f, 250.f));
-    pMenu->addButton("New Game");
-    pMenu->addButton("Quit");
+    pMenu->setText(menuFont, charSize, defaultColor);
+    pMenu->setHover(hoverSound, hoverColor);
+    pMenu->setClick(clickSound, clickColor);
+    pMenu->setInc(sf::Vector2f(incx, incy));
+    pMenu->setPosition(sf::Vector2f(posx, posy));
+    for (int i = 0; i < numOfButtons; i++) {
+        buttonName = reader.Get(section, "button - " + std::to_string(i), "ERROR:UNABLE TO READ BUTTON VALUE");
+        pMenu->addButton(buttonName);
+    }
     pMenu->createBackground();
-    menus[Menus::Main] = pMenu;
-}
-
-void GUI::createModeMenu(){
-    Menu* pMenu = new Menu;
-    pMenu->setActive(false);
-    pMenu->setText("sansation.ttf", 50, 0x000000FF);
-    pMenu->setHover("Main_Menu_Hover_Effect.wav", 0xFF0000FF);
-    pMenu->setClick("Main_Menu_Click_Effect.wav", 0xFFFF00FF);
-    pMenu->setInc(sf::Vector2f(0.f, 100.f));
-    pMenu->setPosition(sf::Vector2f(-800.f, 150.f));
-    pMenu->addButton("1 Player");
-    pMenu->addButton("2 Players");
-    pMenu->addButton("Back");
-    pMenu->createBackground();
-    menus[Menus::Modes] = pMenu;
-}
-
-void GUI::createEndGameMenu() {
-    Menu* pMenu = new Menu;
-    pMenu->setActive(false);
-    pMenu->setText("sansation.ttf", 50, 0x000000FF);
-    pMenu->setHover("Main_Menu_Hover_Effect.wav" , 0xFF0000FF);
-    pMenu->setClick("Main_Menu_Click_Effect.wav", 0xFFFF00FF);
-    pMenu->setInc(sf::Vector2f(0.f, 100.f));
-    pMenu->setPosition(sf::Vector2f(-600.f, 100.f));
-    pMenu->addButton("Restart");
-    pMenu->addButton("Back to Main Menu");
-    pMenu->addButton("Quit");
-    pMenu->createBackground();
-    menus[Menus::EndGame] = pMenu;
+    menus[menuName] = pMenu;
 }
 
 void GUI::Destroy() {
@@ -171,6 +153,10 @@ void GUI::Menu::draw(sf::RenderWindow &window) const {
 
 }
 
+void GUI::Menu::setIdentity(const std::string &id) {
+    this->id = id;
+}
+
 void GUI::Menu::setActive(bool flag) {
     if(active){
         sf::Time totalTime = sf::seconds(0.0f);
@@ -240,6 +226,7 @@ void GUI::Menu::createBackground() {
     size.x += maxWidth;
     background.setSize(size);
     background.setTexture(textures["menu_bg"]);
+    background.setFillColor(sf::Color(0xFFFFFFAA));
     background.setPosition(startingPosition-sf::Vector2f(25.f,25.f));
 }
 

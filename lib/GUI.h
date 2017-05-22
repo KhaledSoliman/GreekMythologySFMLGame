@@ -16,13 +16,6 @@ namespace GUI {
         enabled = 1 << 1,
         hovered = 1 << 2,
     };
-
-    enum class Menus {
-        Main,
-        Modes,
-        EndGame
-    };
-
     struct Sound {
         sf::SoundBuffer buffer;
         sf::Sound sound;
@@ -75,6 +68,8 @@ namespace GUI {
 
         bool isActive();
 
+        void setIdentity(const std::string&);
+
         void setText(const std::string &, unsigned int, const sf::Uint32 &);
 
         void setHover(const std::string &, const sf::Uint32 &);
@@ -99,6 +94,7 @@ namespace GUI {
     private:
         std::set<Button *> buttons;
         std::set<sf::Text *> texts;
+        std::string id;
         sf::Vector2f startingPosition;
         sf::Vector2f currentPosition;
         sf::Vector2f incVector;
@@ -121,15 +117,11 @@ namespace GUI {
 
     void removeTexts();
 
-    void createMainMenu();
-
-    void createModeMenu();
-
-    void createEndGameMenu();
+    void createMenu(const std::string &);
 
     void Destroy();
 
-    extern std::map<Menus, GUI::Menu*> menus;
+    extern std::map<std::string, GUI::Menu*> menus;
     extern std::map<std::string, std::function<void()>> triggers;
     extern std::map<std::string, sf::Font*> fonts;
     extern std::vector<sf::Text*> texts;

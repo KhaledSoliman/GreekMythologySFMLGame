@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Game.h"
+#include <time.h>
 
 Game::GameEngine Game::game;
 
@@ -12,7 +13,8 @@ void Game::GameEngine::renderWindow() {
     gameWindow.window.setVerticalSyncEnabled(gameWindow.verticalSync);
     gameWindow.window.setFramerateLimit(gameWindow.frameLimit);
     gameWindow.window.setActive(gameWindow.active);
-    background.setBG("../assets/common/bg-1.jpg", gameWindow.window);
+    std::srand(std::time(nullptr));
+    background.setBG("../assets/common/bg-" + std::to_string(std::rand() % 4 + 1) + ".jpg", gameWindow.window);
 }
 
 void Game::GameEngine::renderFrame() {
@@ -49,96 +51,7 @@ void Game::GameEngine::run() {
                         element.second->hoveringScan(
                                 gameWindow.window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y)));
             } else if (event.type == sf::Event::KeyPressed) {
-                if (gameMode && GL::world.isActive()) {
-                    bool flag;
-                    if (currentEntity) {
-                        switch (event.key.code) {
-                            case sf::Keyboard::Up:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::North);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::Right:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::East);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::Left:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::West);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::Down:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::South);
-                                flag = true;
-                                break;
-                            default:
-                                flag = false;
-                                break;
-                        }
-                    } else {
-                        switch (event.key.code) {
-                            case sf::Keyboard::W:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::North);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::D:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::East);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::A:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::West);
-                                flag = true;
-                                break;
-                            case sf::Keyboard::S:
-                                GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::South);
-                                flag = true;
-                                break;
-                            default:
-                                flag = false;
-                                break;
-                        }
-                    }
 
-                    if (flag) {
-                        currentEntity = 1 - currentEntity;
-                        if(GL::world.isActive()){
-                            GUI::removeTexts();
-                            GUI::addText("Player " + std::to_string(currentEntity + 1) + "'s (" +
-                                         (currentEntity ? "Cat" : "Mouse") + ") turn", "sansation", 32, sf::Color::Red,
-                                         sf::Vector2f(100.f, 100.f));
-                            GUI::addText(currentEntity ? "Use the Arrow Keys to Play!" : "Use the W,A,S,D keys to Play!",
-                                         "sansation", 32, sf::Color::Red, sf::Vector2f(100.f, 200.f));
-                        }
-                    }
-                } else if (GL::world.isActive()) {
-                    bool flag;
-                    switch (event.key.code) {
-                        case sf::Keyboard::W:
-                        case sf::Keyboard::Up:
-                            GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::North);
-                            flag = true;
-                            break;
-                        case sf::Keyboard::D:
-                        case sf::Keyboard::Right:
-                            GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::East);
-                            flag = true;
-                            break;
-                        case sf::Keyboard::A:
-                        case sf::Keyboard::Left:
-                            GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::West);
-                            flag = true;
-                            break;
-                        case sf::Keyboard::S:
-                        case sf::Keyboard::Down:
-                            GL::world.moveEntity(static_cast<GL::EntityType>(currentEntity), GL::Direction::South);
-                            flag = true;
-                            break;
-                        default:
-                            flag = false;
-                            break;
-                    }
-                    if (flag && GL::world.isActive()){
-                        GL::world.moveEntity(GL::EntityType::Cat, static_cast<GL::Direction>(rand() % 4));
-                    }
-                }
 
             }
             renderFrame();
