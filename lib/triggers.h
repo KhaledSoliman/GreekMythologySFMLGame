@@ -6,6 +6,13 @@ namespace triggers {
 
     void quit();
     void startGame();
+    void openSettings();
+    void toggleFullscreen();
+    void changeMusicVolume();
+    void changeGFXVolume();
+    void toggleFPSOverlay();
+    void selectProfile(unsigned int);
+    void backToMainMenu();
 
 };
 

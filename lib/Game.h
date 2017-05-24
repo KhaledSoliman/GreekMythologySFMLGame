@@ -46,7 +46,7 @@ namespace Game {
 
         Window() {
             windowMode = sf::VideoMode().getDesktopMode();
-            windowTitle = "Mouse and Cat meow meow!";
+            windowTitle = "Day of Reckoning: The Road to Athens V0.0.1 Alpha";
             windowStyle = sf::Style::Default;
             verticalSync = false;
             active = true;
@@ -66,6 +66,18 @@ namespace Game {
         Window &operator=(const Window &) = delete;
     };
 
+
+    struct UserProfile {
+        std::string userName;
+        unsigned int victories;
+        unsigned int defeats;
+        UserProfile(const std::string& userName,unsigned int victories, unsigned int defeats) {
+            this->userName = userName;
+            this->victories = victories;
+            this->defeats = defeats;
+        }
+    };
+
     class GameEngine {
     public:
         GameEngine();
@@ -78,15 +90,29 @@ namespace Game {
 
         void quit();
 
+        int getFPS() const;
+
+        void playMusic(const std::string&);
+
+        void stopMusic();
+
+        void findUserProfiles();
+
+        void setUserProfile(unsigned int);
+
+        void toggleFullscreen();
+
+        void setMusicVolume(unsigned int);
+
+        unsigned int getMusicVolume() const;
+
+        void setGFXVolume(unsigned int);
+
+        unsigned int getGFXVolume() const;
+
+        void startNewGame();
+
         sf::Time getFrameTime() const;
-
-        void setGameMode(int);
-
-        int getGameMode() const;
-
-        void setCurrentEntity(int);
-
-        int getCurrentEntity() const;
 
         void setBackground(const std::string &);
 
@@ -94,15 +120,26 @@ namespace Game {
 
         GameEngine(const GameEngine &) = delete;
 
+        Window& getWindow();
+
         GameEngine &operator=(const GameEngine &) = delete;
 
     private:
         Window gameWindow;
+        bool inGame;
         sf::Clock clock;
+        sf::Clock framesClock;
         sf::Time timePerFrame;
         Background background;
-        int gameMode;
-        int currentEntity;
+        bool musicPlayed;
+        sf::Music music;
+        int frameCounter;
+        sf::Time framesTime;
+        bool userProfileSelected;
+        unsigned int musicVolume;
+        unsigned int gfxVolume;
+        unsigned int userProfile;
+        bool fullscreen;
     };
 
     extern GameEngine game;

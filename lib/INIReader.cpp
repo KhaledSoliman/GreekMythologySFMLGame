@@ -40,13 +40,13 @@ long INIReader::GetInteger(const string& section, const string& name, long defau
     return end > value ? n : default_value;
 }
 
-unsigned __int32 INIReader::GetUI(const string& section, const string& name, std::uint32_t default_value) const
+unsigned __int32 INIReader::GetUI(const string& section, const string& name,unsigned __int32 default_value) const
 {
     string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
     char* end;
     // This parses "1234" (decimal) and also "0x4D2" (hex)
-    std::uint32_t n = strtoul(value, &end, 0);
+    unsigned __int32 n = strtoul(value, &end, 0);
     return end > value ? n : default_value;
 }
 

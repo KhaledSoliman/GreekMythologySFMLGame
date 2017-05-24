@@ -16,6 +16,7 @@ namespace GUI {
         enabled = 1 << 1,
         hovered = 1 << 2,
     };
+
     struct Sound {
         sf::SoundBuffer buffer;
         sf::Sound sound;
@@ -36,6 +37,8 @@ namespace GUI {
 
         int getState() const;
 
+        void setProfileButton(unsigned int);
+
         void bindFunction(std::function<void()>);
 
         bool isMouseOver(const sf::Vector2f &) const;
@@ -44,6 +47,8 @@ namespace GUI {
 
     private:
         bool clickAble;
+        bool profileButton;
+        unsigned int profileNum;
         int state;
         std::function<void()> callBack;
     };
@@ -66,9 +71,9 @@ namespace GUI {
 
         void setActive(bool);
 
-        bool isActive();
+        bool isActive() const;
 
-        void setIdentity(const std::string&);
+        void setIdentity(const std::string &);
 
         void setText(const std::string &, unsigned int, const sf::Uint32 &);
 
@@ -81,6 +86,8 @@ namespace GUI {
         void setInc(const sf::Vector2f &);
 
         void emptyText();
+
+        void clear();
 
         ~Menu() {
             for (auto element: buttons) {
@@ -109,9 +116,39 @@ namespace GUI {
         sf::RectangleShape background;
     };
 
+    class Overlay {
+    public:
+        Overlay() : active(false) {}
+
+        void setActive(bool);
+
+        bool isActive() const;
+
+        void setText(const std::string &, unsigned int, const sf::Uint32 &);
+
+        void addText(const std::string &, const sf::Vector2f &);
+
+        void draw(sf::RenderWindow &) const;
+
+        void emptyText();
+
+        ~Overlay() {
+            emptyText();
+        }
+
+    private:
+        std::set<sf::Text *> texts;
+        bool active;
+        sf::Font font;
+        unsigned int charSize;
+        sf::Color defaultColor;
+    };
+
     void Init();
 
     void Render(sf::RenderWindow &);
+
+    void Update();
 
     void addText(const std::string &, const std::string &, unsigned int, const sf::Color &, const sf::Vector2f &);
 
@@ -121,10 +158,11 @@ namespace GUI {
 
     void Destroy();
 
-    extern std::map<std::string, GUI::Menu*> menus;
+    extern std::map<std::string, Menu *> menus;
+    extern std::map<std::string, Overlay *> overlays;
     extern std::map<std::string, std::function<void()>> triggers;
-    extern std::map<std::string, sf::Font*> fonts;
-    extern std::vector<sf::Text*> texts;
+    extern std::map<std::string, sf::Font *> fonts;
+    extern std::vector<sf::Text *> texts;
     extern std::map<std::string, const sf::Texture *> textures;
 };
 
