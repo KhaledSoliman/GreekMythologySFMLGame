@@ -3,7 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
+#include <set>
 #include "Game.h"
+#include "GUI.h"
 #include <time.h>
 
 namespace GL {
@@ -11,6 +13,12 @@ namespace GL {
     enum {
         male,
         female
+    };
+
+    enum ButtonFlags {
+        disabled = 1 << 0,
+        enabled = 1 << 1,
+        hovered = 1 << 2,
     };
 
     enum class PlayerType {
@@ -39,9 +47,36 @@ namespace GL {
 
     class Skill {
     public:
-    private:
-        int destructiveness;
+        Skill(const std::string &, const sf::Vector2f &);
 
+        bool isActive() const;
+
+        void setActive(bool);
+
+        void draw(sf::RenderWindow &);
+
+        void trigger();
+
+        bool isMouseOver(const sf::Vector2f &) const;
+
+        void hover();
+
+        int getState() const;
+
+        void unHover();
+
+        ~Skill();
+
+    private:
+        sf::RectangleShape *background;
+        sf::RectangleShape *content;
+        std::string name;
+        bool active;
+        const sf::Color hoverColor = sf::Color(0xFFFFFFFF);
+        const sf::Color clickColor = sf::Color(0xFFFF00FF);
+        const sf::Color lockedColor = sf::Color(0xFF0000FF);
+        int state;
+        int FaithCost;
 
     };
 
@@ -112,7 +147,7 @@ namespace GL {
 
         bool isActive() const;
 
-        void draw(sf::RenderWindow&);
+        void draw(sf::RenderWindow &);
 
         ~Environment();
 
@@ -120,20 +155,51 @@ namespace GL {
         struct Tile {
             sf::RectangleShape *shape;
         };
-        Tile** grid;
+        Tile **grid;
         bool active;
     };
 
-    class Map {
-
-    };
 
     class Overlay {
     public:
+        Overlay() : active(false) {}
+
+        void setActive(bool);
+
+        bool isActive() const;
+
+        void setText(const std::string &, unsigned int, const sf::Uint32 &);
+
+        void addText(const std::string &, const sf::Vector2f &);
+
+        void addSkill(Skill*);
+
+        bool clickScan(const sf::Vector2f &);
+
+        void hoveringScan(const sf::Vector2f &);
+
+        void draw(sf::RenderWindow &) const;
+
+        void emptyText();
+
+        ~Overlay() {
+            emptyText();
+            for (auto element: skills)
+                delete element;
+            for (auto element: buttons)
+                delete element;
+            skills.clear();
+            buttons.clear();
+        }
 
     private:
-        std::vector<GUI::Button *> buttons;
-        Map* map;
+        std::set<sf::Text *> texts;
+        std::set<GUI::Button *> buttons;
+        std::vector<Skill *> skills;
+        sf::Font font;
+        sf::Color defaultColor;
+        bool active;
+        unsigned int charSize;
     };
 
 
@@ -144,7 +210,8 @@ namespace GL {
     void Destroy();
 
     extern std::map<std::string, const sf::Texture *> textures;
-    extern Environment* environment;
+    extern Environment *environment;
+    extern Overlay* overlay;
 };
 
 
