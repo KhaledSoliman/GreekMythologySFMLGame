@@ -3,8 +3,8 @@
 
 
 int main() {
-    GUI::Init();
     GL::Init();
+    GUI::Init();
     Game::game.run();
     return EXIT_SUCCESS;
 }

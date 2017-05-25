@@ -4,7 +4,8 @@
 
 Game::GameEngine Game::game;
 
-Game::GameEngine::GameEngine() : userProfile(0),userProfileSelected(false), musicPlayed(false), inGame(false), fullscreen(false), gfxVolume(100), musicVolume(100), frameCounter(0){
+Game::GameEngine::GameEngine() : userProfile(0), userProfileSelected(false), musicPlayed(false), inGame(false),
+                                 fullscreen(false), gfxVolume(100), musicVolume(100), frameCounter(0) {
 }
 
 void Game::GameEngine::renderWindow() {
@@ -17,22 +18,25 @@ void Game::GameEngine::renderWindow() {
     background.setBG("../assets/common/bg-" + std::to_string(std::rand() % 4 + 1) + ".jpg", gameWindow.window);
 }
 
-void Game::GameEngine::setUserProfile(unsigned int num){
+void Game::GameEngine::setUserProfile(unsigned int num) {
     userProfile = num;
     userProfileSelected = true;
 }
 
 void Game::GameEngine::renderFrame() {
     clock.restart();
-    background.draw(gameWindow.window);
+    gameWindow.window.clear((sf::Color(0x000000FF)));
+    if (!inGame)
+        background.draw(gameWindow.window);
     GUI::Render(gameWindow.window);
     GL::Render(gameWindow.window);
     gameWindow.window.display();
     timePerFrame = clock.getElapsedTime();
 }
 
-void Game::GameEngine::startNewGame(){
-
+void Game::GameEngine::startNewGame() {
+    inGame = true;
+    GL::environment->setActive(true);
 }
 
 void Game::GameEngine::findUserProfiles() {
@@ -44,11 +48,12 @@ void Game::GameEngine::findUserProfiles() {
     GUI::menus["profiles"]->addText("Please select your user profile or create a new one");
     GUI::menus["profiles"]->addText("User Profiles Found: " + std::to_string(num));
     GUI::menus["profiles"]->addButton("Create a new profile");
-    if(num){
-        for(int i = 1; i <= num; i++){
-            GUI::menus["profiles"]->addButton("Name: " + reader.Get(profile + std::to_string(i), "name", "NAME UNREADABLE!")
-                            + " Victories: " + std::to_string(reader.GetUI(profile + std::to_string(i), "victories", 0))
-                            + " Defeats: " + std::to_string(reader.GetUI(profile + std::to_string(i), "defeats", 0)));
+    if (num) {
+        for (int i = 1; i <= num; i++) {
+            GUI::menus["profiles"]->addButton(
+                    "Name: " + reader.Get(profile + std::to_string(i), "name", "NAME UNREADABLE!")
+                    + " Victories: " + std::to_string(reader.GetUI(profile + std::to_string(i), "victories", 0))
+                    + " Defeats: " + std::to_string(reader.GetUI(profile + std::to_string(i), "defeats", 0)));
         }
     }
     GUI::menus["profiles"]->addButton("Return to Main Menu");
@@ -58,7 +63,7 @@ void Game::GameEngine::findUserProfiles() {
 }
 
 void Game::GameEngine::toggleFullscreen() {
-    if(fullscreen)
+    if (fullscreen)
         gameWindow.windowStyle = sf::Style::Default;
     else
         gameWindow.windowStyle = sf::Style::Fullscreen;
@@ -66,8 +71,8 @@ void Game::GameEngine::toggleFullscreen() {
     renderWindow();
 }
 
-void Game::GameEngine::playMusic(const std::string& path){
-    if(!musicPlayed) {
+void Game::GameEngine::playMusic(const std::string &path) {
+    if (!musicPlayed) {
         music.setLoop(true);
         music.openFromFile(path);
         music.play();
@@ -84,7 +89,7 @@ unsigned int Game::GameEngine::getMusicVolume() const {
     return musicVolume;
 }
 
-void Game::GameEngine::setMusicVolume(unsigned int vol){
+void Game::GameEngine::setMusicVolume(unsigned int vol) {
     musicVolume = vol;
     music.setVolume((float) vol);
 }
@@ -93,7 +98,7 @@ unsigned int Game::GameEngine::getGFXVolume() const {
     return gfxVolume;
 }
 
-void Game::GameEngine::setGFXVolume(unsigned int vol){
+void Game::GameEngine::setGFXVolume(unsigned int vol) {
     gfxVolume = vol;
 }
 
@@ -101,10 +106,11 @@ void Game::GameEngine::run() {
     renderWindow();
     while (gameWindow.window.isOpen()) {
         sf::Event event;
-        if(GUI::menus["main"]->isActive()) playMusic("../assets/music/Main_Menu_Music.wav");
+        if (GUI::menus["main"]->isActive()) playMusic("../assets/music/Main_Menu_Music.wav");
         while (gameWindow.window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 quit();
+                break;
             } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                 bool found;
                 for (auto element: GUI::menus)
@@ -128,10 +134,10 @@ void Game::GameEngine::run() {
             }
         }
         framesClock.restart();
-        renderFrame();
+        if (gameWindow.window.isOpen()) renderFrame();
         framesTime += framesClock.getElapsedTime();
         frameCounter++;
-        if(framesTime.asMilliseconds() > 1000){
+        if (framesTime.asMilliseconds() > 1000) {
             GUI::Update();
             frameCounter = 0;
             framesTime = sf::seconds(0);
@@ -163,6 +169,6 @@ void Game::GameEngine::setBackground(const sf::Color &color) {
     background.backgroundColor = color;
 }
 
-Game::Window& Game::GameEngine::getWindow() {
+Game::Window &Game::GameEngine::getWindow() {
     return gameWindow;
 }

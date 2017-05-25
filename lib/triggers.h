@@ -12,6 +12,7 @@ namespace triggers {
     void changeGFXVolume();
     void toggleFPSOverlay();
     void selectProfile(unsigned int);
+    void skillButton(const std::string&);
     void backToMainMenu();
 
 };

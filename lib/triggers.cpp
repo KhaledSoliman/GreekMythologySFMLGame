@@ -22,6 +22,9 @@ void triggers::toggleFullscreen() {
 
 void triggers::selectProfile(unsigned int num) {
     Game::game.setUserProfile(num);
+    GUI::menus["profiles"]->setActive(false);
+    GUI::removeTexts();
+    Game::game.startNewGame();
 }
 
 void triggers::toggleFPSOverlay() {
@@ -88,6 +91,9 @@ void triggers::changeGFXVolume() {
     }
     GUI::overlays.erase("gfxVol");
     delete pOverlay;
+}
+
+void triggers::skillButton(const std::string &skill) {
 }
 
 void triggers::backToMainMenu() {

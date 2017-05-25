@@ -50,37 +50,42 @@ namespace GL {
     private:
         std::string name;
         PlayerType type;
-        std::vector<Skill*> skills;
+        std::vector<Skill *> skills;
     };
 
     class Structure : public sf::Sprite {
     public:
-        Structure()  {}
+        Structure() {}
+
     private:
         int resistance;
-        sf::Texture* texture;
+        sf::Texture *texture;
     };
 
     class Citizen : public sf::Sprite {
     public:
 
-        Citizen () : active(false), alive(true) {
+        Citizen() : active(false), alive(true) {
             name = "Doe";
             std::srand(time(NULL));
             age = std::rand() % 99 + 1;
-            sex =  std::rand() % 2;
+            sex = std::rand() % 2;
         }
-        void kill(){
+
+        void kill() {
             alive = false;
             active = false;
 
         }
+
         bool isAlive() {
             return alive;
         }
-        void setActive(bool active){
+
+        void setActive(bool active) {
             this->active = active;
         }
+
         bool isActive() {
             return active;
         }
@@ -91,13 +96,46 @@ namespace GL {
         bool active;
         std::string name;
         int sex;
-        sf::Texture* texture;
+        sf::Texture *texture;
     };
 
     class City {
     public:
     private:
     };
+
+    class Environment {
+    public:
+        Environment(const sf::Vector2f &size);
+
+        void setActive(bool);
+
+        bool isActive() const;
+
+        void draw(sf::RenderWindow&);
+
+        ~Environment();
+
+    private:
+        struct Tile {
+            sf::RectangleShape *shape;
+        };
+        Tile** grid;
+        bool active;
+    };
+
+    class Map {
+
+    };
+
+    class Overlay {
+    public:
+
+    private:
+        std::vector<GUI::Button *> buttons;
+        Map* map;
+    };
+
 
     void Render(sf::RenderWindow &);
 
@@ -106,6 +144,7 @@ namespace GL {
     void Destroy();
 
     extern std::map<std::string, const sf::Texture *> textures;
+    extern Environment* environment;
 };
 
 
