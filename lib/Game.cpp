@@ -25,7 +25,7 @@ void Game::GameEngine::setUserProfile(unsigned int num) {
 
 void Game::GameEngine::renderFrame() {
     clock.restart();
-    gameWindow.window.clear((sf::Color(0x85929EFF)));
+    gameWindow.window.clear((sf::Color(0x000000FF)));
     if (!inGame)
         background.draw(gameWindow.window);
     GUI::Render(gameWindow.window);
@@ -37,7 +37,7 @@ void Game::GameEngine::renderFrame() {
 void Game::GameEngine::startNewGame() {
     inGame = true;
     GL::environment->setActive(true);
-    GL::overlay->setActive(true);
+    std::time_t result = std::time(nullptr);
 }
 
 void Game::GameEngine::findUserProfiles() {
@@ -119,10 +119,6 @@ void Game::GameEngine::run() {
                         found = element.second->clickScan(
                                 gameWindow.window.mapPixelToCoords(
                                         sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
-                        if (inGame && !found)
-                            found = GL::overlay->clickScan(
-                                    gameWindow.window.mapPixelToCoords(
-                                            sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
                         if (found) {
                             while (gameWindow.window.pollEvent(event));
                             break;
@@ -133,8 +129,6 @@ void Game::GameEngine::run() {
                     if (element.second->isActive())
                         element.second->hoveringScan(
                                 gameWindow.window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y)));
-                GL::overlay->hoveringScan(
-                        gameWindow.window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y)));
             } else if (event.type == sf::Event::KeyPressed) {
 
 
@@ -146,6 +140,7 @@ void Game::GameEngine::run() {
         frameCounter++;
         if (framesTime.asMilliseconds() > 1000) {
             GUI::Update();
+            GL::Update();
             frameCounter = 0;
             framesTime = sf::seconds(0);
         }

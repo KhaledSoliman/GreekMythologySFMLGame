@@ -11,7 +11,7 @@
 #include "../ini.h"
 #include "INIReader.h"
 
-using std::string;
+using namespace std;
 
 INIReader::INIReader(const string& filename)
 {

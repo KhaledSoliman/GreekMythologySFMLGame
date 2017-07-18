@@ -3,9 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
-#include <set>
 #include "Game.h"
-#include "GUI.h"
 #include <time.h>
 
 namespace GL {
@@ -13,12 +11,6 @@ namespace GL {
     enum {
         male,
         female
-    };
-
-    enum ButtonFlags {
-        disabled = 1 << 0,
-        enabled = 1 << 1,
-        hovered = 1 << 2,
     };
 
     enum class PlayerType {
@@ -42,41 +34,19 @@ namespace GL {
         farm,
         wall,
         gate,
-        tree
     };
 
     class Skill {
     public:
-        Skill(const std::string &, const sf::Vector2f &);
+        
 
-        bool isActive() const;
 
-        void setActive(bool);
-
-        void draw(sf::RenderWindow &);
-
-        void trigger();
-
-        bool isMouseOver(const sf::Vector2f &) const;
-
-        void hover();
-
-        int getState() const;
-
-        void unHover();
-
-        ~Skill();
 
     private:
-        sf::RectangleShape *background;
-        sf::RectangleShape *content;
         std::string name;
-        bool active;
-        const sf::Color hoverColor = sf::Color(0xFFFFFFFF);
-        const sf::Color clickColor = sf::Color(0xFFFF00FF);
-        const sf::Color lockedColor = sf::Color(0xFF0000FF);
-        int state;
-        int FaithCost;
+        int destructiveness;
+
+
 
     };
 
@@ -95,6 +65,7 @@ namespace GL {
     private:
         int resistance;
         sf::Texture *texture;
+        StructureType type;
     };
 
     class Citizen : public sf::Sprite {
@@ -105,6 +76,7 @@ namespace GL {
             std::srand(time(NULL));
             age = std::rand() % 99 + 1;
             sex = std::rand() % 2;
+            fortified = std::rand() % 2;
         }
 
         void kill() {
@@ -129,6 +101,7 @@ namespace GL {
         int age;
         bool alive;
         bool active;
+        bool fortified;
         std::string name;
         int sex;
         sf::Texture *texture;
@@ -136,7 +109,32 @@ namespace GL {
 
     class City {
     public:
+        City () {
+            Citizen * temp;
+            for (int i=0; i<2000; i++){
+                temp = new Citizen;
+                population.push_back(temp);
+            }
+        }
+        ~City(){
+            for (auto element : population){
+                delete element;
+
+            }
+            population.clear();
+        }
+       void setActive(bool);
+       void setTime ();
+       void setInitTime(std::time_t);
+       bool isActive();
+
     private:
+        std::vector <Citizen*> population;
+        sf::Time time;
+        const sf::Time incTime = sf::seconds(1800);
+        bool active;
+        std::time_t initTime;
+
     };
 
     class Environment {
@@ -147,7 +145,7 @@ namespace GL {
 
         bool isActive() const;
 
-        void draw(sf::RenderWindow &);
+        void draw(sf::RenderWindow&);
 
         ~Environment();
 
@@ -155,63 +153,34 @@ namespace GL {
         struct Tile {
             sf::RectangleShape *shape;
         };
-        Tile **grid;
+        Tile** grid;
         bool active;
     };
 
+    class Map {
+
+    };
 
     class Overlay {
     public:
-        Overlay() : active(false) {}
-
-        void setActive(bool);
-
-        bool isActive() const;
-
-        void setText(const std::string &, unsigned int, const sf::Uint32 &);
-
-        void addText(const std::string &, const sf::Vector2f &);
-
-        void addSkill(Skill*);
-
-        bool clickScan(const sf::Vector2f &);
-
-        void hoveringScan(const sf::Vector2f &);
-
-        void draw(sf::RenderWindow &) const;
-
-        void emptyText();
-
-        ~Overlay() {
-            emptyText();
-            for (auto element: skills)
-                delete element;
-            for (auto element: buttons)
-                delete element;
-            skills.clear();
-            buttons.clear();
-        }
 
     private:
-        std::set<sf::Text *> texts;
-        std::set<GUI::Button *> buttons;
-        std::vector<Skill *> skills;
-        sf::Font font;
-        sf::Color defaultColor;
-        bool active;
-        unsigned int charSize;
+        std::vector<GUI::Button *> buttons;
+        Map* map;
     };
 
 
     void Render(sf::RenderWindow &);
+
+    void Update();
 
     void Init();
 
     void Destroy();
 
     extern std::map<std::string, const sf::Texture *> textures;
-    extern Environment *environment;
-    extern Overlay* overlay;
+    extern Environment* environment;
+    extern City* city;
 };
 
 
